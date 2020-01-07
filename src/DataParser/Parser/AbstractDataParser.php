@@ -17,6 +17,8 @@ abstract class AbstractDataParser
     /** @var string */
     public static $id;
 
+    protected $ignoreFields = ['header_frame_counter', 'header_frame_length'];
+
     public function __construct()
     {
         if (empty(static::$id) || !\is_string(static::$id)) {
@@ -33,7 +35,13 @@ abstract class AbstractDataParser
     {
         $format = $this->getFormat();
 
-        return unpack($format, hex2bin($data));
+        $result = unpack($format, hex2bin($data));
+
+        foreach ($this->ignoreFields as $field) {
+            unset($result[$field]);
+        }
+
+        return $result;
     }
 
     protected function getFormat(): string
