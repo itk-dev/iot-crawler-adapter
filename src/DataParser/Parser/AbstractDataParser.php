@@ -17,7 +17,7 @@ abstract class AbstractDataParser
     /** @var string */
     public static $id;
 
-    protected $ignoreFields = ['header_frame_counter', 'header_frame_length'];
+    protected $ignoreFieldsPattern = '/^header_frame_|_sensor_id$/';
 
     public function __construct()
     {
@@ -37,8 +37,14 @@ abstract class AbstractDataParser
 
         $result = unpack($format, hex2bin($data));
 
-        foreach ($this->ignoreFields as $field) {
-            unset($result[$field]);
+        if (isset($this->ignoreFieldsPattern)) {
+            $result = array_filter(
+                $result,
+                function ($field) {
+                    return !preg_match($this->ignoreFieldsPattern, $field);
+                },
+                ARRAY_FILTER_USE_KEY
+            );
         }
 
         return $result;
