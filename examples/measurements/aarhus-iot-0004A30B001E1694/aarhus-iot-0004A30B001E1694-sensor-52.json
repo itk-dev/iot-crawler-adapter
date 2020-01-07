@@ -1,0 +1,37 @@
+{
+  "attributes": [
+    {
+      "timestamp": "2019-11-08T09:22:08+00:00",
+      "value": 97
+    }
+  ],
+  "source" : {
+    "header_frame_counter": 41,
+    "header_frame_length": 12,
+    "battery_sensor_id": 52,
+    "battery_value": 97,
+    "charging_power_sensor_id": 186,
+    "charging_power_value": 0,
+    "water_temperature_sensor_id": 134,
+    "water_temperature_value": 8.10455322265625,
+    "values": [
+      {
+        "sensor_id": 52,
+        "type": "battery",
+        "value": 97
+      },
+      {
+        "sensor_id": 186,
+        "type": "charging_power",
+        "value": 0
+      },
+      {
+        "sensor_id": 134,
+        "type": "water_temperature",
+        "value": 8.10455322265625
+      }
+    ],
+    "sensor_ts": "1573204928207",
+    "sensor": "0004A30B001E1694"
+  }
+}

@@ -1,0 +1,27 @@
+[
+  {
+    "id": "aarhus-iot-0004A30B001E1694",
+    "name": "Citylab 87",
+    "type": "OptionalString",
+    "observationSpace": {
+      "geometry": {
+        "type": "Point",
+        "coordinates": [56.1493785, 10.2111966]
+      }
+    },
+    "sensors": [
+      {
+        "id": "aarhus-iot-0004A30B001E1694-sensor-52",
+        "name":"battery"
+      },
+      {
+        "id": "aarhus-iot-0004A30B001E1694-sensor-186",
+        "name":"charging_power"
+      },
+      {
+        "id": "aarhus-iot-0004A30B001E1694-sensor-134",
+        "name":"water_temperature"
+      }
+    ]
+  }
+]

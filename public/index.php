@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of itk-dev/iot-crawler-adapter.
+ *
+ * (c) 2020 ITK Development
+ *
+ * This source file is subject to the MIT license.
+ */
+
 use App\Kernel;
 use Symfony\Component\ErrorHandler\Debug;
 use Symfony\Component\HttpFoundation\Request;
