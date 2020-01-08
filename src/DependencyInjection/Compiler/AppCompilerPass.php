@@ -10,7 +10,7 @@
 
 namespace App\DependencyInjection\Compiler;
 
-use App\DataParser\DataParserManager;
+use App\Loriot\DataParser\DataParserManager;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -19,7 +19,7 @@ class AppCompilerPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {
-        $tag = 'iot_crawler_adapter.data_parser';
+        $tag = 'iot_crawler_adapter.loriot_data_parser';
         $services = $container->findTaggedServiceIds($tag);
         $parsers = [];
         foreach ($services as $id => $tags) {

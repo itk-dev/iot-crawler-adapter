@@ -1,0 +1,47 @@
+<?php
+
+/*
+ * This file is part of itk-dev/iot-crawler-adapter.
+ *
+ * (c) 2020 ITK Development
+ *
+ * This source file is subject to the MIT license.
+ */
+
+namespace App\DataFixtures;
+
+use App\Entity\User;
+use App\Security\UserManager;
+use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
+use Doctrine\Common\Persistence\ObjectManager;
+
+class UserFixtures extends Fixture implements FixtureGroupInterface
+{
+    /** @var UserManager */
+    private $userManager;
+
+    public function __construct(UserManager $userManager)
+    {
+        $this->userManager = $userManager;
+    }
+
+    public function load(ObjectManager $manager)
+    {
+        $user = (new User())
+            ->setEmail('loriot@example.com')
+            ->setApiToken('api-test-loriot')
+            ->setRoles(['ROLE_LORIOT']);
+        $this->userManager->setPassword($user, 'loriot');
+
+        $manager->persist($user);
+        $this->setReference('user:loriot', $user);
+
+        $manager->flush();
+    }
+
+    public static function getGroups(): array
+    {
+        return ['user'];
+    }
+}

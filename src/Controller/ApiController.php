@@ -11,6 +11,7 @@
 namespace App\Controller;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class ApiController
@@ -27,7 +28,7 @@ class ApiController
     {
         return new JsonResponse(
             $this->serializer->serialize($data, 'json', $context),
-            200,
+            Response::HTTP_OK,
             [],
             true
         );

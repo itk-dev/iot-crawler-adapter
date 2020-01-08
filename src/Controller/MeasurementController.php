@@ -10,9 +10,9 @@
 
 namespace App\Controller;
 
-use App\DataParser\DataParserManager;
 use App\Entity\Device;
 use App\Entity\Sensor;
+use App\Loriot\DataParser\DataParserManager;
 use App\Repository\MeasurementRepository;
 use DateTimeImmutable;
 use Symfony\Component\HttpFoundation\Response;

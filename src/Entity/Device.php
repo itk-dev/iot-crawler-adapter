@@ -43,6 +43,12 @@ class Device implements TimestampableInterface
      */
     private $sensors;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="devices")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user;
+
     public function __construct()
     {
         $this->sensors = new ArrayCollection();
@@ -99,6 +105,18 @@ class Device implements TimestampableInterface
                 $sensor->setDevice(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }

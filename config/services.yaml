@@ -25,6 +25,6 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-    App\DataParser\Parser\:
-        resource: '../src/DataParser/Parser'
-        tags: ['iot_crawler_adapter.data_parser']
+    App\Loriot\DataParser\Parser\:
+        resource: '../src/Loriot/DataParser/Parser'
+        tags: ['iot_crawler_adapter.loriot_data_parser']
