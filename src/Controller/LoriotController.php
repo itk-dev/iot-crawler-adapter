@@ -30,6 +30,7 @@ class LoriotController
     public function post(Request $request, SerializerInterface $serializer, DataManager $dataManager)
     {
         try {
+            $dataPath = $request->get('dataPath', 'data');
             $dataFormat = $request->get('dataFormat');
             if (empty($dataFormat)) {
                 return $this->badRequest(sprintf('Missing data format: %s', $dataFormat));
@@ -42,7 +43,7 @@ class LoriotController
                 try {
                     $payload = $serializer->decode($content, 'json');
 
-                    $dataManager->handle($payload, $dataFormat);
+                    $dataManager->handle($payload, $dataPath, $dataFormat);
 
                     return new JsonResponse('OK');
                 } catch (UnexpectedValueException $exception) {

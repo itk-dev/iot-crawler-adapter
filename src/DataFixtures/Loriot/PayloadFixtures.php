@@ -48,7 +48,7 @@ class PayloadFixtures extends Fixture implements DependentFixtureInterface
         foreach ($finder as $file) {
             $payload = json_decode(file_get_contents($file->getRealPath()), true);
             $dataFormat = basename($file->getPath());
-            $this->dataManager->handle($payload, $dataFormat);
+            $this->dataManager->handle($payload, 'data', $dataFormat);
         }
     }
 

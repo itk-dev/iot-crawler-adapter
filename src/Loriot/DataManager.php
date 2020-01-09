@@ -18,6 +18,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use RuntimeException;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class DataManager
@@ -38,7 +39,7 @@ class DataManager
         $this->tokenStorage = $tokenStorage;
     }
 
-    public function handle(array $payload, string $dataFormat)
+    public function handle(array $payload, string $dataPath, string $dataFormat)
     {
         $user = $this->tokenStorage->getToken()->getUser();
 
@@ -57,10 +58,11 @@ class DataManager
         }
 
         $parser = $this->dataParserManager->getParser($dataFormat);
-        $data = $parser->parse($payload['data'], true);
-        $sensors = $this->getSensorData($data);
+        $data = $this->getData($payload, $dataPath);
+        $data = $parser->parse($data, true);
+        $sensorData = $this->getSensorData($data);
 
-        foreach ($sensors as $name => $data) {
+        foreach ($sensorData as $name => $data) {
             $sensorId = $deviceId.'-sensor-'.$data['sensor_id'];
             $sensor = $this->entityManager->getRepository(Sensor::class)->find($sensorId);
             if (null === $sensor) {
@@ -81,6 +83,14 @@ class DataManager
         }
 
         $this->entityManager->flush();
+    }
+
+    private function getData(array $payload, string $path)
+    {
+        $accessor = PropertyAccess::createPropertyAccessor();
+        $path = '['.implode('][', explode('.', $path)).']';
+
+        return $accessor->getValue($payload, $path);
     }
 
     private function getSensorData(array $data)
