@@ -21,7 +21,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 class DeviceController extends ApiController
 {
     /**
-     * @Route("/", name="index")
+     * @Route("", name="index")
      */
     public function index(DeviceRepository $repository, SerializerInterface $serializer): Response
     {
