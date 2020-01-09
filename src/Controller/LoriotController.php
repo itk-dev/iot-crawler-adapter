@@ -33,7 +33,7 @@ class LoriotController
             $dataPath = $request->get('dataPath', 'data');
             $dataFormat = $request->get('dataFormat');
             if (empty($dataFormat)) {
-                return $this->badRequest(sprintf('Missing data format: %s', $dataFormat));
+                return $this->badRequest('Missing data format');
             }
 
             $content = $request->getContent();
@@ -45,7 +45,7 @@ class LoriotController
 
                     $dataManager->handle($payload, $dataPath, $dataFormat);
 
-                    return new JsonResponse('OK');
+                    return new JsonResponse('OK', Response::HTTP_CREATED);
                 } catch (UnexpectedValueException $exception) {
                     return $this->badRequest($exception->getMessage());
                 }
