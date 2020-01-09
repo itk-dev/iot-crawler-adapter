@@ -93,6 +93,16 @@ class DataManager
             }
         }
 
+        if (empty($sensors)) {
+            // Assume that we have sensor name => value data.
+            foreach ($data as $name => $value) {
+                $sensors[$name] = [
+                    'sensor_id' => $name,
+                    'value' => $value,
+                ];
+            }
+        }
+
         return $sensors;
     }
 

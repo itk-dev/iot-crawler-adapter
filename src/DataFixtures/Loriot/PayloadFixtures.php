@@ -47,7 +47,7 @@ class PayloadFixtures extends Fixture implements DependentFixtureInterface
         /** @var \SplFileInfo $file */
         foreach ($finder as $file) {
             $payload = json_decode(file_get_contents($file->getRealPath()), true);
-            $dataFormat = $payload['EUI'];
+            $dataFormat = basename($file->getPath());
             $this->dataManager->handle($payload, $dataFormat);
         }
     }
