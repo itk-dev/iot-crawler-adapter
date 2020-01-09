@@ -54,7 +54,7 @@ class UserCreateCommand extends Command
         }
 
         if (empty($password)) {
-            $email = $io->ask('Password? ');
+            $password = $io->ask('Password? ');
         }
 
         $values = [
