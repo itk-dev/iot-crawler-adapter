@@ -13,6 +13,7 @@ namespace App\Repository;
 use App\Entity\Measurement;
 use App\Entity\Sensor;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
@@ -30,6 +31,6 @@ class MeasurementRepository extends ServiceEntityRepository
 
     public function findLatestBySensor(Sensor $sensor): ?Measurement
     {
-        return $this->findOneBy(['sensor' => $sensor]);
+        return $this->findOneBy(['sensor' => $sensor], ['timestamp' => Criteria::DESC]);
     }
 }
