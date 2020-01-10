@@ -26,7 +26,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class MeasurementController extends ApiController
 {
     /**
-     * @Route("/{device}/{sensor}", name="lastest")
+     * @Route("/{device}/{sensor}", name="latest")
      */
     public function latest(Device $device, Sensor $sensor, MeasurementRepository $repository, DataParserManager $dataParserManager): Response
     {

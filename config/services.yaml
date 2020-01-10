@@ -4,12 +4,25 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
+    'env(VCS_URL)': 'https://github.com/rimi-itk/iot-crawler-adapter/tree/master'
 
 services:
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            $indexData:
+                name: 'IoT Crawler adapter'
+                documentation: '%env(VCS_URL)%/docs'
+                routes:
+                    'devices (GET)': device_index
+                    'measurement (GET)':
+                        name: measurement_latest
+                        params:
+                            device: device-id
+                            sensor: sensor-id
+                    'loriot (POST)': loriot_post
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
