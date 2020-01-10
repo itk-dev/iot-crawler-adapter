@@ -42,6 +42,6 @@ class UserFixtures extends Fixture implements FixtureGroupInterface
 
     public static function getGroups(): array
     {
-        return ['user'];
+        return ['test', 'user'];
     }
 }

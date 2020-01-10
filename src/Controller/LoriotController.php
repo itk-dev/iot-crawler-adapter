@@ -33,7 +33,7 @@ class LoriotController
             $dataPath = $request->get('dataPath', 'data');
             $dataFormat = $request->get('dataFormat');
             if (empty($dataFormat)) {
-                return $this->badRequest(sprintf('Missing data format: %s', $dataFormat));
+                return $this->badRequest('Missing data format');
             }
 
             $content = $request->getContent();
@@ -43,9 +43,17 @@ class LoriotController
                 try {
                     $payload = $serializer->decode($content, 'json');
 
-                    $dataManager->handle($payload, $dataPath, $dataFormat);
+                    if (isset($payload['EUI'], $payload['cmd'])) {
+                        if ('gw' === $payload['cmd']) {
+                            // Actual data.
+                            $dataManager->handle($payload, $dataPath, $dataFormat);
 
-                    return new JsonResponse('OK');
+                            return new JsonResponse('created', Response::HTTP_CREATED);
+                        } else {
+                            // Handshake or similar.
+                            return new JsonResponse('ok', Response::HTTP_OK);
+                        }
+                    }
                 } catch (UnexpectedValueException $exception) {
                     return $this->badRequest($exception->getMessage());
                 }
