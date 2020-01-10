@@ -56,7 +56,19 @@ class LoriotControllerTest extends WebTestCase
             'json' => [],
         ]);
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
-        $this->assertEquals(['title' => 'Undefined index: EUI'], $this->getJson($response));
+        $this->assertEquals(['title' => 'Invalid request'], $this->getJson($response));
+
+        $response = $this->post('/loriot', [
+            'query' => [
+                'dataFormat' => 'ELSYS',
+            ],
+            'headers' => [
+                'authorization' => 'token api-test-loriot',
+            ],
+            'json' => ['cmd' => 'gw'],
+        ]);
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        $this->assertEquals(['title' => 'Invalid request'], $this->getJson($response));
 
         $response = $this->post('/loriot', [
             'query' => [
@@ -84,6 +96,32 @@ class LoriotControllerTest extends WebTestCase
 
         $this->assertArrayHasKey('sensors', $actual[0]);
         $this->assertCount(4, $actual[0]['sensors']);
+
+        // Handshake?
+        $response = $this->post('/loriot', [
+            'query' => [
+                'dataFormat' => 'ELSYS',
+            ],
+            'headers' => [
+                'authorization' => 'token api-test-loriot',
+                'content-type' => 'application/json',
+            ],
+            'body' => '{"cmd":"txd","EUI":"A81758FFFE03CFE0","seqdn":3236,"seqq":3236,"ts":1578580357307}',
+        ]);
+        $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
+
+        // Actual measure measurement.
+        $response = $this->post('/loriot', [
+            'query' => [
+                'dataFormat' => 'ELSYS',
+            ],
+            'headers' => [
+                'authorization' => 'token api-test-loriot',
+                'content-type' => 'application/json',
+            ],
+            'body' => '{"cmd":"gw","seqno":17863,"EUI":"ELSYS-A81758FFFE03CFE0","ts":1515504296415,"fcnt":6525,"port":4,"freq":868300000,"toa":61,"dr":"SF7 BW125 4\\/5","ack":false,"gws":[{"rssi":-91,"snr":8,"ts":1515504296415,"time":"2018-01-09T13:24:56.309729091Z","rsig":[{"ant":0,"chan":6,"rssic":-91,"lsnr":8,"etime":"8zjbwTIrGpyQFIAefBxNKg==","rssis":-92,"rssisd":0,"ftime":-1,"foff":12554,"ft2d":863,"rfbsb":99,"rs2s1":160}],"gweui":"7076FFFFFF010B88"},{"rssi":-104,"snr":-8,"ts":1515504296442,"time":"2018-01-09T13:24:56.309732793Z","rsig":[{"ant":0,"chan":6,"rssic":-104,"lsnr":-8,"etime":"5G+AW\\/25fLBGfujK6CWV4A==","rssis":-113,"rssisd":1,"ftime":-1,"foff":12425,"ft2d":176,"rfbsb":100,"rs2s1":80}],"gweui":"7076FFFFFF010B32"}],"bat":255,"data":"010033025c070e1314000f703f"}',
+        ]);
+        $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
     }
 
     private $client;
