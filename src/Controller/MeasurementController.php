@@ -12,6 +12,7 @@ namespace App\Controller;
 
 use App\Entity\Device;
 use App\Entity\Sensor;
+use App\Loriot\DataManager;
 use App\Loriot\DataParser\DataParserManager;
 use App\Repository\MeasurementRepository;
 use DateTimeImmutable;
@@ -28,12 +29,13 @@ class MeasurementController extends ApiController
     /**
      * @Route("/{device}/{sensor}", name="latest")
      */
-    public function latest(Device $device, Sensor $sensor, MeasurementRepository $repository, DataParserManager $dataParserManager): Response
+    public function latest(Device $device, Sensor $sensor, MeasurementRepository $repository, DataParserManager $dataParserManager, DataManager $dataManager): Response
     {
         if ($sensor->getDevice() !== $device) {
             throw new BadRequestHttpException(sprintf('sensor %s does not belong to device %s', $sensor->getId(), $device->getId()));
         }
         $measurement = $repository->findLatestBySensor($sensor);
+        $measurementName = $dataManager->getMeasurementName($sensor->getId());
 
         if (null === $measurement) {
             throw new NotFoundHttpException();
@@ -43,11 +45,18 @@ class MeasurementController extends ApiController
         $data = $parser->parse($measurement->getPayload()['data']);
         $attributes = [];
         foreach ($data as $name => $value) {
-            $attributes[] = [
-                'timestamp' => $measurement->getTimestamp()->format(DateTimeImmutable::ATOM),
-                $name => $value,
-            ];
+            if ($measurementName === $name) {
+                $attributes[] = [
+                    'timestamp' => $measurement->getTimestamp()->format(DateTimeImmutable::ATOM),
+                    $name => $value,
+                ];
+            }
         }
+
+        if (empty($attributes)) {
+            throw new NotFoundHttpException();
+        }
+
         $result = [
             'attributes' => $attributes,
             'source' => $measurement->getPayload(),

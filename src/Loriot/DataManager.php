@@ -63,7 +63,7 @@ class DataManager
         $sensorData = $this->getSensorData($data);
 
         foreach ($sensorData as $name => $data) {
-            $sensorId = $deviceId.'-sensor-'.$data['sensor_id'];
+            $sensorId = $this->getSensorId($deviceId, $data['sensor_id']);
             $sensor = $this->entityManager->getRepository(Sensor::class)->find($sensorId);
             if (null === $sensor) {
                 $sensor = (new Sensor())
@@ -85,6 +85,20 @@ class DataManager
         $this->entityManager->flush();
     }
 
+    public function getSensorId(string $deviceId, string $measurement): string
+    {
+        return $deviceId.'-sensor-'.$measurement;
+    }
+
+    public function getMeasurementName(string $sensorId)
+    {
+        if (preg_match('/^(?P<deviceId>.+)-sensor-(?P<measurement>.+)$/', $sensorId, $matches)) {
+            return $matches['measurement'];
+        }
+
+        return null;
+    }
+
     private function getData(array $payload, string $path)
     {
         $accessor = PropertyAccess::createPropertyAccessor();
@@ -97,6 +111,9 @@ class DataManager
     {
         $sensors = [];
 
+        // Assume that wa have data with two keys per sensor:
+        //  «measurement»_sensor_id
+        //  «measurement»_value
         foreach ($data as $key => $value) {
             if (preg_match('/^(?P<name>.+)_(?P<key>sensor_id|value)$/', $key, $matches)) {
                 $sensors[$matches['name']][$matches['key']] = $value;
