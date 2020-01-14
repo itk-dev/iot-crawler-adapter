@@ -12,6 +12,7 @@ namespace App\Controller;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class ApiController
@@ -31,6 +32,16 @@ class ApiController
             Response::HTTP_OK,
             [],
             true
+        );
+    }
+
+    protected function createExceptionResponse(HttpExceptionInterface $exception)
+    {
+        return new JsonResponse(
+            [
+                'title' => $exception->getMessage() ?: Response::$statusTexts[$exception->getStatusCode()],
+            ],
+            $exception->getStatusCode()
         );
     }
 }

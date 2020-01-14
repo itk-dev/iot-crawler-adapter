@@ -16,6 +16,7 @@ use App\Loriot\DataManager;
 use App\Loriot\DataParser\DataParserManager;
 use App\Repository\MeasurementRepository;
 use DateTimeImmutable;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -29,8 +30,14 @@ class MeasurementController extends ApiController
     /**
      * @Route("/{device}/{sensor}", name="latest")
      */
-    public function latest(Device $device, Sensor $sensor, MeasurementRepository $repository, DataParserManager $dataParserManager, DataManager $dataManager): Response
+    public function latest(Request $request, ?Device $device, ?Sensor $sensor, MeasurementRepository $repository, DataParserManager $dataParserManager, DataManager $dataManager): Response
     {
+        if (null === $device) {
+            return $this->createExceptionResponse(new NotFoundHttpException(sprintf('Device %s not found', $request->attributes->get('_route_params')['device'] ?? null)));
+        }
+        if (null === $sensor) {
+            return $this->createExceptionResponse(new NotFoundHttpException(sprintf('Sensor %s not found', $request->attributes->get('_route_params')['sensor'] ?? null)));
+        }
         if ($sensor->getDevice() !== $device) {
             throw new BadRequestHttpException(sprintf('sensor %s does not belong to device %s', $sensor->getId(), $device->getId()));
         }
@@ -54,7 +61,7 @@ class MeasurementController extends ApiController
         }
 
         if (empty($attributes)) {
-            throw new NotFoundHttpException();
+            return $this->createExceptionResponse(new NotFoundHttpException(sprintf('Measurement %s not found', $measurementName)));
         }
 
         $result = [
