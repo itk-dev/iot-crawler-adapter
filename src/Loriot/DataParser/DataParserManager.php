@@ -12,20 +12,19 @@ namespace App\Loriot\DataParser;
 
 use App\Loriot\DataParser\Exception\DataParserException;
 use App\Loriot\DataParser\Parser\AbstractDataParser;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class DataParserManager
 {
-    use ContainerAwareTrait;
-
     /** @var array */
     private $parsers;
 
-    public function __construct(ContainerInterface $container, array $parsers)
+    public function __construct(iterable $loriotDataParsers)
     {
-        $this->container = $container;
-        $this->parsers = $parsers;
+        foreach ($loriotDataParsers as $parser) {
+            if ($parser instanceof AbstractDataParser) {
+                $this->parsers[$parser->getId()] = $parser;
+            }
+        }
     }
 
     public function getParser(string $id): AbstractDataParser
@@ -34,6 +33,6 @@ class DataParserManager
             throw new DataParserException(sprintf('Invalid parser: %s', $id));
         }
 
-        return $this->container->get($this->parsers[$id]);
+        return $this->parsers[$id];
     }
 }

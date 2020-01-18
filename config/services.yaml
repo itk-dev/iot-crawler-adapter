@@ -24,6 +24,8 @@ services:
                             sensor: sensor-id
                     'loriot (POST)': loriot_post
 
+            $loriotDataParsers: !tagged_iterator 'iot_crawler_adapter.loriot_data_parser'
+
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:
