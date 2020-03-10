@@ -1,0 +1,11 @@
+{
+  verbose: true,
+  adapter: {
+    post: {
+      options: {
+        // @see https://nodejs.org/api/tls.html#tls_tls_createserver_options_secureconnectionlistener
+        rejectUnauthorized: false
+      }
+    }
+  }
+}

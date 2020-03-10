@@ -1,0 +1,8 @@
+{
+  devices: {
+    ids: [
+      // List of device ids or uuids, e.g.
+      "4926f66b-e109-4245-8380-2a575fe35ea8"
+    ]
+  }
+}
