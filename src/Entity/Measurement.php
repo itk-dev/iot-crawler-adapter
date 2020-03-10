@@ -53,7 +53,7 @@ class Measurement
     private $payload = [];
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $dataFormat;
 

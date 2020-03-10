@@ -10,6 +10,7 @@
 
 namespace App\Loriot;
 
+use App\DataManager\AbstractDataManager;
 use App\Entity\Device;
 use App\Entity\Measurement;
 use App\Entity\Sensor;
@@ -21,7 +22,7 @@ use RuntimeException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
-class DataManager
+class DataManager extends AbstractDataManager
 {
     /** @var EntityManagerInterface */
     private $entityManager;
@@ -49,7 +50,8 @@ class DataManager
             $device = (new Device())
                 ->setUser($user)
                 ->setId($deviceId)
-                ->setName('Device '.$deviceId);
+                ->setType(Device::LORIOT)
+                ->setName('loriot '.$deviceId);
             $this->entityManager->persist($device);
         }
 
@@ -69,7 +71,7 @@ class DataManager
                 $sensor = (new Sensor())
                     ->setId($sensorId)
                     ->setDevice($device)
-                    ->setName('Sensor '.$sensorId);
+                    ->setName('loriot '.$sensorId);
                 $this->entityManager->persist($sensor);
             }
 
@@ -136,5 +138,25 @@ class DataManager
     private function getTimestamp(int $timestamp): DateTimeInterface
     {
         return DateTimeImmutable::createFromFormat('U.u', sprintf('%d.%d', $timestamp / 1000, $timestamp % 1000));
+    }
+
+    public function getAttributes(Measurement $measurement)
+    {
+        $measurementName = $this->getMeasurementName($measurement->getSensor()->getId());
+
+        $dataFormat = $measurement->getDataFormat();
+        if (null !== $dataFormat) {
+            $parser = $this->dataParserManager->getParser($dataFormat);
+            $data = $parser->parse($measurement->getPayload()['data']);
+            $attributes = [];
+            foreach ($data as $name => $value) {
+                if ($measurementName === $name) {
+                    return [
+                        'timestamp' => $measurement->getTimestamp()->format(DateTimeImmutable::ATOM),
+                        $name => $value,
+                    ];
+                }
+            }
+        }
     }
 }

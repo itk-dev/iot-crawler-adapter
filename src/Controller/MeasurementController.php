@@ -12,10 +12,9 @@ namespace App\Controller;
 
 use App\Entity\Device;
 use App\Entity\Sensor;
-use App\Loriot\DataManager;
-use App\Loriot\DataParser\DataParserManager;
+use App\Loriot\DataManager as LoriotDataManager;
 use App\Repository\MeasurementRepository;
-use DateTimeImmutable;
+use App\Smartcitizen\DataManager as SmartcitizenDataManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -30,7 +29,7 @@ class MeasurementController extends ApiController
     /**
      * @Route("/{device}/{sensor}", name="latest")
      */
-    public function latest(Request $request, ?Device $device, ?Sensor $sensor, MeasurementRepository $repository, DataParserManager $dataParserManager, DataManager $dataManager): Response
+    public function latest(Request $request, ?Device $device, ?Sensor $sensor, MeasurementRepository $repository, LoriotDataManager $loriotDataManager, SmartcitizenDataManager $smartcitizenDataManager): Response
     {
         if (null === $device) {
             return $this->createExceptionResponse(new NotFoundHttpException(sprintf('Device %s not found', $request->attributes->get('_route_params')['device'] ?? null)));
@@ -42,26 +41,23 @@ class MeasurementController extends ApiController
             throw new BadRequestHttpException(sprintf('sensor %s does not belong to device %s', $sensor->getId(), $device->getId()));
         }
         $measurement = $repository->findLatestBySensor($sensor);
-        $measurementName = $dataManager->getMeasurementName($sensor->getId());
 
         if (null === $measurement) {
             throw new NotFoundHttpException();
         }
+        $type = $measurement->getSensor()->getDevice()->getType();
+        switch ($type) {
+            case Device::LORIOT:
+                $attributes = $loriotDataManager->getAttributes($measurement);
+                break;
 
-        $parser = $dataParserManager->getParser($measurement->getDataFormat());
-        $data = $parser->parse($measurement->getPayload()['data']);
-        $attributes = [];
-        foreach ($data as $name => $value) {
-            if ($measurementName === $name) {
-                $attributes[] = [
-                    'timestamp' => $measurement->getTimestamp()->format(DateTimeImmutable::ATOM),
-                    $name => $value,
-                ];
-            }
+            case Device::SMARTCITIZEN:
+                $attributes = $smartcitizenDataManager->getAttributes($measurement);
+                break;
         }
 
         if (empty($attributes)) {
-            return $this->createExceptionResponse(new NotFoundHttpException(sprintf('Measurement %s not found', $measurementName)));
+            throw new NotFoundHttpException();
         }
 
         $result = [

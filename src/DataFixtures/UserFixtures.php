@@ -37,6 +37,15 @@ class UserFixtures extends Fixture implements FixtureGroupInterface
         $manager->persist($user);
         $this->setReference('user:loriot', $user);
 
+        $user = (new User())
+            ->setEmail('smartcitizen@example.com')
+            ->setApiToken('api-test-smartcitizen')
+            ->setRoles(['ROLE_SMARTCITIZEN']);
+        $this->userManager->setPassword($user, 'smartcitizen');
+
+        $manager->persist($user);
+        $this->setReference('user:smartcitizen', $user);
+
         $manager->flush();
     }
 

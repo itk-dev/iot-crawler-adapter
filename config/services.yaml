@@ -23,6 +23,7 @@ services:
                             device: device-id
                             sensor: sensor-id
                     'loriot (POST)': loriot_post
+                    'smartcitizen (POST)': smartcitizen_post
 
             $loriotDataParsers: !tagged_iterator 'iot_crawler_adapter.loriot_data_parser'
 

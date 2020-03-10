@@ -20,7 +20,7 @@ class Sensor
 {
     /**
      * @ORM\Id()
-     * @ORM\Column(type="string", length=64)
+     * @ORM\Column(type="string", length=132)
      * @Groups({"sensor", "device"})
      */
     private $id;

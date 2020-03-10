@@ -22,6 +22,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
  */
 class Device implements TimestampableInterface
 {
+    public const LORIOT = 'loriot';
+    public const SMARTCITIZEN = 'smartcitizen';
+
     use TimestampableTrait;
 
     /**
@@ -30,6 +33,12 @@ class Device implements TimestampableInterface
      * @Groups("device")
      */
     private $id;
+
+    /**
+     * @ORM\Column(type="string", length=64)
+     * @Groups("device")
+     */
+    private $type;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -62,6 +71,18 @@ class Device implements TimestampableInterface
     public function setId(string $id): self
     {
         $this->id = $id;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): self
+    {
+        $this->type = $type;
 
         return $this;
     }

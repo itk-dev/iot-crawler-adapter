@@ -8,11 +8,11 @@
  * This source file is subject to the MIT license.
  */
 
-namespace App\DataFixtures\Loriot;
+namespace App\DataFixtures\Smartcitizen;
 
 use App\DataFixtures\UserFixtures;
 use App\Entity\User;
-use App\Loriot\DataManager;
+use App\Smartcitizen\DataManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -37,7 +37,7 @@ class PayloadFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager)
     {
         /** @var User $user */
-        $user = $this->getReference('user:loriot');
+        $user = $this->getReference('user:smartcitizen');
         $token = new PostAuthenticationGuardToken($user, 'main', $user->getRoles());
         $this->tokenStorage->setToken($token);
 
@@ -48,7 +48,7 @@ class PayloadFixtures extends Fixture implements DependentFixtureInterface
         foreach ($finder as $file) {
             $payload = json_decode(file_get_contents($file->getRealPath()), true);
             $dataFormat = basename($file->getPath());
-            $this->dataManager->handle($payload, 'data', $dataFormat);
+            $this->dataManager->handle($payload);
         }
     }
 
