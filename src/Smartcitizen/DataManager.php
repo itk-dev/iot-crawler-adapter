@@ -98,7 +98,7 @@ class DataManager extends AbstractDataManager
         return $sensors;
     }
 
-    public function getAttributes(Measurement $measurement)
+    public function getAttributes(Measurement $measurement): ?array
     {
         $sensors = $measurement->getPayload()['data']['sensors'] ?? [];
         foreach ($sensors as $sensor) {

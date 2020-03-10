@@ -65,7 +65,8 @@ class DataManager extends AbstractDataManager
         $sensorData = $this->getSensorData($data);
 
         foreach ($sensorData as $name => $data) {
-            $sensorId = $this->getSensorId($deviceId, $data['sensor_id']);
+            $sensorId = $this->getSensorId($deviceId, $name);
+
             $sensor = $this->entityManager->getRepository(Sensor::class)->find($sensorId);
             if (null === $sensor) {
                 $sensor = (new Sensor())
@@ -140,7 +141,7 @@ class DataManager extends AbstractDataManager
         return DateTimeImmutable::createFromFormat('U.u', sprintf('%d.%d', $timestamp / 1000, $timestamp % 1000));
     }
 
-    public function getAttributes(Measurement $measurement)
+    public function getAttributes(Measurement $measurement): ?array
     {
         $measurementName = $this->getMeasurementName($measurement->getSensor()->getId());
 
@@ -148,9 +149,9 @@ class DataManager extends AbstractDataManager
         if (null !== $dataFormat) {
             $parser = $this->dataParserManager->getParser($dataFormat);
             $data = $parser->parse($measurement->getPayload()['data']);
-            $attributes = [];
+
             foreach ($data as $name => $value) {
-                if ($measurementName === $name) {
+                if ($measurementName === $name || preg_match('/^'.preg_quote($measurementName, '/').'_/', $name)) {
                     return [
                         'timestamp' => $measurement->getTimestamp()->format(DateTimeImmutable::ATOM),
                         $name => $value,
@@ -158,5 +159,7 @@ class DataManager extends AbstractDataManager
                 }
             }
         }
+
+        return null;
     }
 }

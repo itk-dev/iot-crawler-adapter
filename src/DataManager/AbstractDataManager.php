@@ -14,5 +14,5 @@ use App\Entity\Measurement;
 
 abstract class AbstractDataManager
 {
-    abstract public function getAttributes(Measurement $measurement);
+    abstract public function getAttributes(Measurement $measurement): ?array;
 }

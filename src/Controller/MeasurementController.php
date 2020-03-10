@@ -14,6 +14,7 @@ use App\Entity\Device;
 use App\Entity\Sensor;
 use App\Loriot\DataManager as LoriotDataManager;
 use App\Repository\MeasurementRepository;
+use App\Repository\SensorRepository;
 use App\Smartcitizen\DataManager as SmartcitizenDataManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,6 +27,18 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class MeasurementController extends ApiController
 {
+    /**
+     * @Route("/{device}", name="device")
+     */
+    public function device(
+        ?Device $device,
+        SensorRepository $repository
+    ): Response {
+        $sensors = $repository->findByDevice($device);
+
+        return $this->createJsonResponse($sensors, ['groups' => 'sensor']);
+    }
+
     /**
      * @Route("/{device}/{sensor}", name="latest")
      */
@@ -65,6 +78,6 @@ class MeasurementController extends ApiController
             'source' => $measurement->getPayload(),
         ];
 
-        return  $this->createJsonResponse($result, ['groups' => 'measurement']);
+        return $this->createJsonResponse($result, ['groups' => 'measurement']);
     }
 }

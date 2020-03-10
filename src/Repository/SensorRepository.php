@@ -10,6 +10,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Device;
 use App\Entity\Sensor;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
@@ -19,6 +20,7 @@ use Doctrine\Common\Persistence\ManagerRegistry;
  * @method Sensor|null findOneBy(array $criteria, array $orderBy = null)
  * @method Sensor[]    findAll()
  * @method Sensor[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Sensor[]    findByDevice(Device $device, array $orderBy = null, $limit = null, $offset = null)
  */
 class SensorRepository extends ServiceEntityRepository
 {
