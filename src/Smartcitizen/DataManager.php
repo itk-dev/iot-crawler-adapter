@@ -68,7 +68,7 @@ class DataManager extends AbstractDataManager
             $measurement = (new Measurement())
                 ->setSensor($sensor)
                 ->setSequenceNumber($data['measurement_id'])
-                ->setTimestamp(new DateTimeImmutable($data['created_at']))
+                ->setTimestamp(new DateTimeImmutable($payload['data']['recorded_at']))
                 ->setPayload($payload);
             $this->entityManager->persist($measurement);
         }
@@ -100,11 +100,12 @@ class DataManager extends AbstractDataManager
 
     public function getAttributes(Measurement $measurement): ?array
     {
-        $sensors = $measurement->getPayload()['data']['sensors'] ?? [];
+        $data = $measurement->getPayload()['data'] ?? [];
+        $sensors = $data['sensors'] ?? [];
         foreach ($sensors as $sensor) {
             if ($sensor['uuid'] === $measurement->getSensor()->getId()) {
                 return [
-                    'timestamp' => $sensor['updated_at'],
+                    'timestamp' => $data['recorded_at'],
                     $sensor['name'] => $sensor['raw_value'],
                 ];
             }

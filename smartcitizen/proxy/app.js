@@ -20,7 +20,8 @@ const postPayload = (payload) => {
       method: 'POST',
       headers: {
         'content-type': 'application/json; charset=utf-8',
-        'content-length': Buffer.byteLength(data, 'utf8')
+        'content-length': Buffer.byteLength(data, 'utf8'),
+        'authorization': 'token '+config.get('adapter.api_token')
       }
     },
     ...config.get('adapter.post.options')

@@ -22,11 +22,15 @@ const config = convict({
     },
     ids: {
       doc: 'List of device ids or uuids',
-
       default: []
     }
   },
   adapter: {
+    api_token: {
+      doc: 'Api token',
+      format: 'String',
+      default: null
+    },
     post: {
       url: {
         doc: 'Where to post data',
