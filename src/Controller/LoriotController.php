@@ -22,7 +22,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 /**
  * @Route("/loriot", name="loriot_")
  */
-class LoriotController
+class LoriotController extends AbstractAdapterController
 {
     /**
      * @Route("", name="post", methods={"POST"})
@@ -54,25 +54,18 @@ class LoriotController
                             return new JsonResponse('ok', Response::HTTP_OK);
                         }
                     }
+
+                    return $this->badRequest('Invalid payload', ['payload' => $payload]);
                 } catch (UnexpectedValueException $exception) {
-                    return $this->badRequest($exception->getMessage());
+                    return $this->badRequest($exception->getMessage(), ['exception' => $exception]);
                 }
             } else {
                 return $this->badRequest(sprintf('Invalid content-type: %s', $contentType));
             }
         } catch (Exception $exception) {
-            return $this->badRequest($exception->getMessage());
+            return $this->badRequest($exception->getMessage(), ['exception' => $exception]);
         }
 
         return $this->badRequest();
-    }
-
-    private function badRequest(string $message = 'Invalid request', string $details = null): JsonResponse
-    {
-        // @see https://tools.ietf.org/html/rfc7807#page-3
-        return new JsonResponse(array_filter([
-            'title' => $message,
-            'details' => $details,
-        ]), Response::HTTP_BAD_REQUEST);
     }
 }
