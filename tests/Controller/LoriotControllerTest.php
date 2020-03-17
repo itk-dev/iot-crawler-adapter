@@ -56,7 +56,7 @@ class LoriotControllerTest extends WebTestCase
             'json' => [],
         ]);
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
-        $this->assertEquals(['title' => 'Invalid request'], $this->getJson($response));
+        $this->assertEquals(['title' => 'Invalid payload'], $this->getJson($response));
 
         $response = $this->post('/loriot', [
             'query' => [
@@ -68,7 +68,7 @@ class LoriotControllerTest extends WebTestCase
             'json' => ['cmd' => 'gw'],
         ]);
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
-        $this->assertEquals(['title' => 'Invalid request'], $this->getJson($response));
+        $this->assertEquals(['title' => 'Invalid payload'], $this->getJson($response));
 
         $response = $this->post('/loriot', [
             'query' => [
