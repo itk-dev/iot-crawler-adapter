@@ -52,6 +52,37 @@ abstract class AbstractDataParser
         return $result;
     }
 
+    /**
+     * Get sensors from parsed payload.
+     *
+     * @return array
+     */
+    public function getSensors(array $data)
+    {
+        $sensors = [];
+
+        // Assume that wa have data with two keys per sensor:
+        //  «measurement»_sensor_id
+        //  «measurement»_value
+        foreach ($data as $key => $value) {
+            if (preg_match('/^(?P<name>.+)_(?P<key>sensor_id|value)$/', $key, $matches)) {
+                $sensors[$matches['name']][$matches['key']] = $value;
+            }
+        }
+
+        if (empty($sensors)) {
+            // Assume that we have sensor name => value data.
+            foreach ($data as $name => $value) {
+                $sensors[$name] = [
+                    'sensor_id' => $name,
+                    'value' => $value,
+                ];
+            }
+        }
+
+        return $sensors;
+    }
+
     protected function getFormat(): string
     {
         throw new DataParserException(sprintf('%s.%s not implemented', static::class, __FUNCTION__));

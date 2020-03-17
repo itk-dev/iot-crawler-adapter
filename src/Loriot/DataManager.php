@@ -62,7 +62,8 @@ class DataManager extends AbstractDataManager
         $parser = $this->dataParserManager->getParser($dataFormat);
         $data = $this->getData($payload, $dataPath);
         $data = $parser->parse($data, true);
-        $sensorData = $this->getSensorData($data);
+        $payload['parsed_data'] = $data;
+        $sensorData = $parser->getSensors($data);
 
         foreach ($sensorData as $name => $data) {
             $sensorId = $this->getSensorId($deviceId, $name);
@@ -108,32 +109,6 @@ class DataManager extends AbstractDataManager
         $path = '['.implode('][', explode('.', $path)).']';
 
         return $accessor->getValue($payload, $path);
-    }
-
-    private function getSensorData(array $data)
-    {
-        $sensors = [];
-
-        // Assume that wa have data with two keys per sensor:
-        //  «measurement»_sensor_id
-        //  «measurement»_value
-        foreach ($data as $key => $value) {
-            if (preg_match('/^(?P<name>.+)_(?P<key>sensor_id|value)$/', $key, $matches)) {
-                $sensors[$matches['name']][$matches['key']] = $value;
-            }
-        }
-
-        if (empty($sensors)) {
-            // Assume that we have sensor name => value data.
-            foreach ($data as $name => $value) {
-                $sensors[$name] = [
-                    'sensor_id' => $name,
-                    'value' => $value,
-                ];
-            }
-        }
-
-        return $sensors;
     }
 
     private function getTimestamp(int $timestamp): DateTimeInterface
