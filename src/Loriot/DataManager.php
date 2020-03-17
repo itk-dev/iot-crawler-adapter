@@ -118,8 +118,9 @@ class DataManager extends AbstractDataManager
 
     public function getAttributes(Measurement $measurement): ?array
     {
-        $measurementName = $this->getMeasurementName($measurement->getSensor()->getId());
+        $attributes = [];
 
+        $measurementName = $this->getMeasurementName($measurement->getSensor()->getId());
         $dataFormat = $measurement->getDataFormat();
         if (null !== $dataFormat) {
             $parser = $this->dataParserManager->getParser($dataFormat);
@@ -127,7 +128,7 @@ class DataManager extends AbstractDataManager
 
             foreach ($data as $name => $value) {
                 if ($measurementName === $name || preg_match('/^'.preg_quote($measurementName, '/').'_/', $name)) {
-                    return [
+                    $attributes[] = [
                         'timestamp' => $measurement->getTimestamp()->format(DateTimeImmutable::ATOM),
                         $name => $value,
                     ];
@@ -135,6 +136,6 @@ class DataManager extends AbstractDataManager
             }
         }
 
-        return null;
+        return $attributes;
     }
 }

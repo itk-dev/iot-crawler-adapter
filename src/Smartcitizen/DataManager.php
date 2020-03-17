@@ -100,17 +100,19 @@ class DataManager extends AbstractDataManager
 
     public function getAttributes(Measurement $measurement): ?array
     {
+        $attributes = [];
+
         $data = $measurement->getPayload()['data'] ?? [];
         $sensors = $data['sensors'] ?? [];
         foreach ($sensors as $sensor) {
             if ($sensor['uuid'] === $measurement->getSensor()->getId()) {
-                return [
+                $attributes[] = [
                     'timestamp' => $data['recorded_at'],
                     $sensor['name'] => $sensor['raw_value'],
                 ];
             }
         }
 
-        return null;
+        return $attributes;
     }
 }
