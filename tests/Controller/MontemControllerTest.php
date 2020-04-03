@@ -65,9 +65,11 @@ class MontemControllerTest extends AbstractControllerTest
                 'authorization' => 'token api-test-montem',
             ],
             'json' => [
-                'id' => 'montem-001',
-                'uuid' => 'montem-001',
-                'data' => [],
+                'name' => 'l',
+                'data' => '{"t":8.13,"mP1":4.08,"mP2":14.98,"mP4":23.60,"mPX":25.32,"nP0":6.18,"nP1":22.25,"nP2":31.90,"nP4":33.87,"nPX":34.19,"aPS":1.63,"p":1033.56,"b":82.05,"h":36.49,"uv":0,"lux":2126.52,"seq":1042,"lat":0,"lng":0,"alt":0,"SIV":0,"PDOP":9999}',
+                'ttl' => 360,
+                'published_at' => '2020-03-24T13:46:33.187Z',
+                'device_id' => '2a001c000f47373432363933',
             ],
         ]);
 
@@ -78,9 +80,9 @@ class MontemControllerTest extends AbstractControllerTest
         $this->assertCount(1, $actual);
 
         $this->assertArrayHasKey('id', $actual[0]);
-        $this->assertEquals('montem-001', $actual[0]['id']);
+        $this->assertEquals('2a001c000f47373432363933', $actual[0]['id']);
 
         $this->assertArrayHasKey('sensors', $actual[0]);
-        $this->assertCount(0, $actual[0]['sensors']);
+        $this->assertCount(22, $actual[0]['sensors']);
     }
 }

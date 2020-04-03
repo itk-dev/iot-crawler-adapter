@@ -39,11 +39,11 @@ class DataManager extends AbstractDataManager
         $user = $this->tokenStorage->getToken()->getUser();
 
         // @TODO Check payload
-        if (!isset($payload['id'], $payload['data'])) {
+        if (!isset($payload['device_id'], $payload['data'], $payload['published_at'])) {
             throw new InvalidArgumentException('Invalid payload');
         }
 
-        $deviceId = $payload['id'];
+        $deviceId = $payload['device_id'];
         $device = $this->entityManager->getRepository(Device::class)->find($deviceId);
         if (null === $device) {
             $device = (new Device())
@@ -58,10 +58,17 @@ class DataManager extends AbstractDataManager
             throw new RuntimeException('Device not owned by current user');
         }
 
-        $sensorData = $this->getSensorData($payload['data']);
+        $data = array_map(static function ($value) use ($payload) {
+            return [
+                'value' => $value,
+                'published_at' => $payload['published_at'],
+            ];
+        }, json_decode($payload['data'], true));
+        $payload['parsed_data'] = $data;
+        $sensorData = $this->getSensorData($data);
 
         foreach ($sensorData as $name => $data) {
-            $sensorId = $this->getSensorId($deviceId, $data['sensor_id']);
+            $sensorId = $this->getSensorId($deviceId, $name);
             $sensor = $this->entityManager->getRepository(Sensor::class)->find($sensorId);
             if (null === $sensor) {
                 $sensor = (new Sensor())
@@ -73,8 +80,7 @@ class DataManager extends AbstractDataManager
 
             $measurement = (new Measurement())
                 ->setSensor($sensor)
-                ->setSequenceNumber($data['measurement_id'])
-                ->setTimestamp(new DateTimeImmutable($payload['data']['recorded_at']))
+                ->setTimestamp(new DateTimeImmutable($payload['published_at']))
                 ->setPayload($payload);
             $this->entityManager->persist($measurement);
         }
@@ -91,7 +97,9 @@ class DataManager extends AbstractDataManager
     {
         $sensors = [];
 
-        // @TODO
+        foreach ($data as $name => $value) {
+            $sensors[$name] = $value;
+        }
 
         return $sensors;
     }
@@ -100,7 +108,15 @@ class DataManager extends AbstractDataManager
     {
         $attributes = [];
 
-        // @TODO
+        $sensors = $measurement->getPayload()['parsed_data'] ?? [];
+        foreach ($sensors as $name => $data) {
+            if ($name === $measurement->getSensor()->getId()) {
+                $attributes[] = [
+                    'timestamp' => $data['published_at'],
+                    $name => $data['value'],
+                ];
+            }
+        }
 
         return $attributes;
     }
