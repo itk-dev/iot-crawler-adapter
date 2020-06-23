@@ -90,7 +90,7 @@ class DataManager extends AbstractDataManager
 
     public function getSensorId(string $deviceId, string $sensorId): string
     {
-        return $sensorId;
+        return $deviceId.'-sensor-'.$sensorId;
     }
 
     private function getSensorData(array $data)

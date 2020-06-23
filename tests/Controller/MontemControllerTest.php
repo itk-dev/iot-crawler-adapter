@@ -84,5 +84,31 @@ class MontemControllerTest extends AbstractControllerTest
 
         $this->assertArrayHasKey('sensors', $actual[0]);
         $this->assertCount(22, $actual[0]['sensors']);
+
+        $response = $this->post('/montem', [
+            'headers' => [
+                'authorization' => 'token api-test-montem',
+            ],
+            'json' => [
+                'name' => 'l',
+                'data' => '{"t":8.13,"mP1":4.08,"mP2":14.98,"mP4":23.60,"mPX":25.32,"nP0":6.18,"nP1":22.25,"nP2":31.90,"nP4":33.87,"nPX":34.19,"aPS":1.63,"p":1033.56,"b":82.05,"h":36.49,"uv":0,"lux":2126.52,"seq":1042,"lat":0,"lng":0,"alt":0,"SIV":0,"PDOP":9999}',
+                'ttl' => 360,
+                'published_at' => '2020-03-24T13:46:33.187Z',
+                'device_id' => '87001c000f47373432363933',
+            ],
+        ]);
+
+        $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
+
+        $response = $this->get('/devices');
+        $actual = $this->getJson($response);
+        $this->assertCount(2, $actual);
+
+        $response = $this->get('/devices/87001c000f47373432363933');
+        $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
+
+        $actual = $this->getJson($response);
+        $this->assertArrayHasKey('sensors', $actual);
+        $this->assertCount(22, $actual['sensors']);
     }
 }
