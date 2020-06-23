@@ -35,7 +35,7 @@ class Measurement
     private $sensor;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      * @Groups({"measurement"})
      */
     private $sequenceNumber;

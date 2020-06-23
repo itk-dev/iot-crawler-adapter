@@ -17,12 +17,21 @@ services:
                 documentation: '%env(VCS_URL)%/docs'
                 routes:
                     'devices (GET)': device_index
+                    'devices - montem (GET)':
+                        name: device_index
+                        params:
+                            type: montem
+                    'devices - smartcitizen (GET)':
+                        name: device_index
+                        params:
+                            type: smartcitizen
                     'measurement (GET)':
                         name: measurement_latest
                         params:
                             device: device-id
                             sensor: sensor-id
                     'loriot (POST)': loriot_post
+                    'montem (POST)': montem_post
                     'smartcitizen (POST)': smartcitizen_post
 
             $loriotDataParsers: !tagged_iterator 'iot_crawler_adapter.loriot_data_parser'

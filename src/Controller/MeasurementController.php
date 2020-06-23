@@ -13,6 +13,7 @@ namespace App\Controller;
 use App\Entity\Device;
 use App\Entity\Sensor;
 use App\Loriot\DataManager as LoriotDataManager;
+use App\Montem\DataManager as MontemDataManager;
 use App\Repository\MeasurementRepository;
 use App\Repository\SensorRepository;
 use App\Smartcitizen\DataManager as SmartcitizenDataManager;
@@ -42,8 +43,15 @@ class MeasurementController extends ApiController
     /**
      * @Route("/{device}/{sensor}", name="latest")
      */
-    public function latest(Request $request, ?Device $device, ?Sensor $sensor, MeasurementRepository $repository, LoriotDataManager $loriotDataManager, SmartcitizenDataManager $smartcitizenDataManager): Response
-    {
+    public function latest(
+        Request $request,
+        ?Device $device,
+        ?Sensor $sensor,
+        MeasurementRepository $repository,
+        LoriotDataManager $loriotDataManager,
+        SmartcitizenDataManager $smartcitizenDataManager,
+        MontemDataManager $montemDataManager
+    ): Response {
         if (null === $device) {
             return $this->createExceptionResponse(new NotFoundHttpException(sprintf('Device %s not found', $request->attributes->get('_route_params')['device'] ?? null)));
         }
@@ -66,6 +74,10 @@ class MeasurementController extends ApiController
 
             case Device::SMARTCITIZEN:
                 $attributes = $smartcitizenDataManager->getAttributes($measurement);
+                break;
+
+            case Device::MONTEM:
+                $attributes = $montemDataManager->getAttributes($measurement);
                 break;
         }
 

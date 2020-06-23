@@ -10,10 +10,9 @@
 
 namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
-class LoriotControllerTest extends WebTestCase
+class LoriotControllerTest extends AbstractControllerTest
 {
     public function testPush()
     {
@@ -140,50 +139,5 @@ class LoriotControllerTest extends WebTestCase
         $this->assertEquals('2018-01-09T13:24:56+00:00', $actual['attributes'][0]['timestamp']);
         $this->assertArrayHasKey('temperature', $actual['attributes'][0]);
         $this->assertEquals(5.1, $actual['attributes'][0]['temperature']);
-    }
-
-    private $client;
-
-    private function request(string $method, string $uri, array $options = [])
-    {
-        if (null === $this->client) {
-            $this->client = static::createClient();
-        }
-
-        $parameters = $options['query'] ?? [];
-        $files = [];
-        $server = [];
-        $headers = $options['headers'] ?? [];
-        if (\array_key_exists('json', $options) && !\in_array('content-type', array_map('strtolower', array_keys($headers)), true)) {
-            $headers['content-type'] = 'application/json';
-        }
-        foreach ($headers as $name => $value) {
-            $name = strtoupper(preg_replace('/[^a-z0-9]/i', '_', $name));
-            if (!\in_array($name, ['CONTENT_TYPE'], true)) {
-                $name = 'HTTP_'.$name;
-            }
-            $server[$name] = $value;
-        }
-
-        $content = \array_key_exists('json', $options) ? json_encode($options['json']) : ($options['body'] ?? null);
-
-        $this->client->request($method, $uri, $parameters, $files, $server, $content);
-
-        return $this->client->getResponse();
-    }
-
-    private function get(string $uri, array $options = [])
-    {
-        return $this->request('GET', $uri, $options);
-    }
-
-    private function post(string $uri, array $options = [])
-    {
-        return $this->request('POST', $uri, $options);
-    }
-
-    private function getJson(Response $response)
-    {
-        return json_decode($response->getContent(), true);
     }
 }

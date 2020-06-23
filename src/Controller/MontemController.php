@@ -10,7 +10,7 @@
 
 namespace App\Controller;
 
-use App\Loriot\DataManager;
+use App\Montem\DataManager;
 use Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,43 +21,26 @@ use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @Route("/loriot", name="loriot_")
+ * @Route("/montem", name="montem_")
  */
-class LoriotController extends AbstractAdapterController
+class MontemController extends AbstractAdapterController
 {
     /**
      * @Route("", name="post", methods={"POST"})
-     * @IsGranted("ROLE_LORIOT")
+     * @IsGranted("ROLE_MONTEM")
      */
     public function post(Request $request, SerializerInterface $serializer, DataManager $dataManager)
     {
         try {
-            $dataPath = $request->get('dataPath', 'data');
-            $dataFormat = $request->get('dataFormat');
-            if (empty($dataFormat)) {
-                return $this->badRequest('Missing data format');
-            }
-
             $content = $request->getContent();
             $contentType = $request->headers->get('content-type');
 
             if (0 === strpos($contentType, 'application/json')) {
                 try {
                     $payload = $serializer->decode($content, 'json');
+                    $dataManager->handle($payload);
 
-                    if (isset($payload['EUI'], $payload['cmd'])) {
-                        if ('gw' === $payload['cmd']) {
-                            // Actual data.
-                            $dataManager->handle($payload, $dataPath, $dataFormat);
-
-                            return new JsonResponse('created', Response::HTTP_CREATED);
-                        } else {
-                            // Handshake or similar.
-                            return new JsonResponse('ok', Response::HTTP_OK);
-                        }
-                    }
-
-                    return $this->badRequest('Invalid payload', ['payload' => $payload]);
+                    return new JsonResponse('created', Response::HTTP_CREATED);
                 } catch (UnexpectedValueException $exception) {
                     return $this->badRequest($exception->getMessage(), ['exception' => $exception]);
                 }

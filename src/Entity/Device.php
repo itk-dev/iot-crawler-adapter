@@ -23,6 +23,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class Device implements TimestampableInterface
 {
     public const LORIOT = 'loriot';
+    public const MONTEM = 'montem';
     public const SMARTCITIZEN = 'smartcitizen';
 
     use TimestampableTrait;
