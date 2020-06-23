@@ -2,7 +2,8 @@
 
 ## Installation
 
-Copy `config/local.json.dist` to `config/local.json.js` and edit appropriately.
+Copy `config/local.json.dist` to `config/local.json` and edit appropriately
+(Note: You can use [JSON5](https://json5.org/) in the config).
 
 ```sh
 yarn install
