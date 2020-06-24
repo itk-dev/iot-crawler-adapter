@@ -17,6 +17,10 @@ services:
                 documentation: '%env(VCS_URL)%/docs'
                 routes:
                     'devices (GET)': device_index
+                    'devices - loriot (GET)':
+                        name: device_index
+                        params:
+                            type: loriot
                     'devices - montem (GET)':
                         name: device_index
                         params:
