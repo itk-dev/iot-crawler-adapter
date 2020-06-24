@@ -105,7 +105,8 @@ class DataManager extends AbstractDataManager
         $data = $measurement->getPayload()['data'] ?? [];
         $sensors = $data['sensors'] ?? [];
         foreach ($sensors as $sensor) {
-            if ($sensor['uuid'] === $measurement->getSensor()->getId()) {
+            $parts = explode('-sensor-', $measurement->getSensor()->getId());
+            if (2 === \count($parts) && $sensor['uuid'] === $parts[1]) {
                 $attributes[] = [
                     'timestamp' => $data['recorded_at'],
                     $sensor['name'] => $sensor['raw_value'],
