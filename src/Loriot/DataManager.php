@@ -24,20 +24,13 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 class DataManager extends AbstractDataManager
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
     /** @var DataParserManager */
     private $dataParserManager;
 
-    /** @var TokenStorageInterface */
-    private $tokenStorage;
-
     public function __construct(EntityManagerInterface $entityManager, DataParserManager $dataParserManager, TokenStorageInterface $tokenStorage)
     {
-        $this->entityManager = $entityManager;
+        parent::__construct($entityManager, $tokenStorage);
         $this->dataParserManager = $dataParserManager;
-        $this->tokenStorage = $tokenStorage;
     }
 
     public function handle(array $payload, string $dataPath, string $dataFormat)
