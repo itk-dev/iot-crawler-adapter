@@ -11,8 +11,22 @@
 namespace App\DataManager;
 
 use App\Entity\Measurement;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 abstract class AbstractDataManager
 {
+    /** @var EntityManagerInterface */
+    protected $entityManager;
+
+    /** @var TokenStorageInterface */
+    protected $tokenStorage;
+
+    public function __construct(EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage)
+    {
+        $this->entityManager = $entityManager;
+        $this->tokenStorage = $tokenStorage;
+    }
+
     abstract public function getAttributes(Measurement $measurement): ?array;
 }

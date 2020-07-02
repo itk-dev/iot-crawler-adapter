@@ -15,25 +15,11 @@ use App\Entity\Device;
 use App\Entity\Measurement;
 use App\Entity\Sensor;
 use DateTimeImmutable;
-use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use RuntimeException;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class DataManager extends AbstractDataManager
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
-    /** @var TokenStorageInterface */
-    private $tokenStorage;
-
-    public function __construct(EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage)
-    {
-        $this->entityManager = $entityManager;
-        $this->tokenStorage = $tokenStorage;
-    }
-
     public function handle(array $payload)
     {
         $user = $this->tokenStorage->getToken()->getUser();

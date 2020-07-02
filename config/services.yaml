@@ -5,6 +5,7 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     'env(VCS_URL)': 'https://github.com/rimi-itk/iot-crawler-adapter/tree/master'
+    'env(MAX_NUMBER_OF_MEASUREMENTS)': '100'
 
 services:
     # default configuration for services in *this* file
@@ -40,6 +41,9 @@ services:
 
             $loriotDataParsers: !tagged_iterator 'iot_crawler_adapter.loriot_data_parser'
 
+            $measurementListenerConfig:
+                max_number_of_measurements: '%env(int:MAX_NUMBER_OF_MEASUREMENTS)%'
+
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:
@@ -57,3 +61,7 @@ services:
     App\Loriot\DataParser\Parser\:
         resource: '../src/Loriot/DataParser/Parser'
         tags: ['iot_crawler_adapter.loriot_data_parser']
+
+    App\EventListener\MeasurementListener:
+        tags:
+            - { name: 'doctrine.event_subscriber' }

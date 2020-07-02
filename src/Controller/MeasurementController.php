@@ -17,6 +17,7 @@ use App\Montem\DataManager as MontemDataManager;
 use App\Repository\MeasurementRepository;
 use App\Repository\SensorRepository;
 use App\Smartcitizen\DataManager as SmartcitizenDataManager;
+use Doctrine\Common\Collections\Criteria;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -91,5 +92,23 @@ class MeasurementController extends ApiController
         ];
 
         return $this->createJsonResponse($result, ['groups' => 'measurement']);
+    }
+
+    /**
+     * @Route("/{device}/{sensor}/all", name="all")
+     */
+    public function all(
+        Request $request,
+        Device $device,
+        Sensor $sensor,
+        MeasurementRepository $repository
+    ): Response {
+        $result = $repository->findBy([
+            'sensor' => $sensor,
+        ], [
+            'timestamp' => Criteria::DESC,
+        ]);
+
+        return $this->createJsonResponse($result, ['groups' => ['sensor', 'measurement']]);
     }
 }

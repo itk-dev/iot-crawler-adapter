@@ -10,6 +10,11 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\Measurement;
+use DateInterval;
+use DateTime;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Query;
 use Symfony\Component\HttpFoundation\Response;
 
 class MontemControllerTest extends AbstractControllerTest
@@ -110,5 +115,58 @@ class MontemControllerTest extends AbstractControllerTest
         $actual = $this->getJson($response);
         $this->assertArrayHasKey('sensors', $actual);
         $this->assertCount(22, $actual['sensors']);
+    }
+
+    public function testPurge()
+    {
+        $maxNumberOfMeasurements = 100;
+
+        $startDate = new DateTime();
+        $date = clone $startDate;
+        for ($i = 0; $i < $maxNumberOfMeasurements + 1; ++$i) {
+            $response = $this->post('/montem', [
+                'headers' => [
+                    'authorization' => 'token api-test-montem',
+                ],
+                'json' => [
+                    'name' => 'l',
+                    'data' => '{"t":8.13,"mP1":4.08,"mP2":14.98,"mP4":23.60,"mPX":25.32,"nP0":6.18,"nP1":22.25,"nP2":31.90,"nP4":33.87,"nPX":34.19,"aPS":1.63,"p":1033.56,"b":82.05,"h":36.49,"uv":0,"lux":2126.52,"seq":1042,"lat":0,"lng":0,"alt":0,"SIV":0,"PDOP":9999}',
+                    'ttl' => 360,
+                    'published_at' => $date->format(DateTime::ATOM),
+                    'device_id' => 'purge-test',
+                ],
+            ]);
+            $date->add(new DateInterval('PT1H'));
+
+            $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
+        }
+
+        $response = $this->get('/devices');
+        $actual = $this->getJson($response);
+        $this->assertCount(1, $actual);
+
+        $kernel = static::$kernel ?? self::bootKernel();
+
+        /** @var EntityManager $entityManager */
+        $entityManager = $kernel->getContainer()
+            ->get('doctrine')
+            ->getManager();
+
+        // Check that only $maxNumberOfMeasurements measurements are stored and that only the latest are stored.
+        $rows = $entityManager->createQueryBuilder()
+            ->select('IDENTITY(m.sensor) AS sensor_id, m.timestamp AS timestamp')
+            ->from(Measurement::class, 'm')
+            ->getQuery()
+            ->getResult(Query::HYDRATE_ARRAY);
+
+        $sensorMeasurements = [];
+        foreach ($rows as $row) {
+            $sensorMeasurements[$row['sensor_id']][] = $row['timestamp'];
+        }
+
+        foreach ($sensorMeasurements as $sensorId => $measurements) {
+            $this->assertCount($maxNumberOfMeasurements, $measurements);
+            $this->assertGreaterThan($startDate, min($measurements));
+        }
     }
 }

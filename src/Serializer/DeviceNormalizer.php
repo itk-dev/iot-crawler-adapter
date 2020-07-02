@@ -43,6 +43,10 @@ class DeviceNormalizer implements ContextAwareNormalizerInterface
                         'device' => $device->getId(),
                         'sensor' => $sensor['id'],
                     ], UrlGeneratorInterface::ABSOLUTE_URL),
+                    'all_measurements' => $this->router->generate('measurement_all', [
+                        'device' => $device->getId(),
+                        'sensor' => $sensor['id'],
+                    ], UrlGeneratorInterface::ABSOLUTE_URL),
                 ];
             }
         }
