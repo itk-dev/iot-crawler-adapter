@@ -9,7 +9,26 @@ Copy `config/local.json.dist` to `config/local.json` and edit appropriately
 yarn install
 ```
 
-## Start the show
+## Start the show with `supervisor`
+
+```conf
+[program:scicap]
+directory=/data/www/iot-crawler-adapter/htdocs/smartcitizen/proxy
+command=/usr/bin/node /data/www/iot-crawler-adapter/htdocs/smartcitizen/proxy/app.js
+autostart=true
+autorestart=true
+environment=NODE_ENV=production
+stderr_logfile=/data/www/iot-crawler-adapter/htdocs/smartcitizen/proxy/scicap.err.log
+stdout_logfile=/data/www/iot-crawler-adapter/htdocs/smartcitizen/proxy/scicap.out.log
+user=deploy
+```
+
+```sh
+sudo service supervisor restart
+sudo supervisorctl status
+```
+
+## Start the show with `pm2`
 
 Install [pm2](https://pm2.keymetrics.io/).
 
