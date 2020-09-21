@@ -38,8 +38,11 @@ const postPayload = (payload) => {
 io.connect(config.get('devices.wss_url'))
   .on('data-received', (device) => {
     info(device.data.recorded_at, device.uuid, device.id)
-    if (deviceIds.includes(device.id) || deviceIds.includes(device.uuid)) {
       info(JSON.stringify(device))
-      postPayload(device)
+      try {
+        postPayload(device)
+      } catch (exception) {
+        console.log(exception)
+      }
     }
   })

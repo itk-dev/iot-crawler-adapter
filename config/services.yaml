@@ -6,6 +6,7 @@
 parameters:
     'env(VCS_URL)': 'https://github.com/rimi-itk/iot-crawler-adapter/tree/master'
     'env(MAX_NUMBER_OF_MEASUREMENTS)': '100'
+    'env(NGSI_LD_BROKER_URL)': ~
 
 services:
     # default configuration for services in *this* file
@@ -13,6 +14,8 @@ services:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
         bind:
+            $ngsiLdBrokerUrl: '%env(NGSI_LD_BROKER_URL)%'
+
             $indexData:
                 name: 'IoT Crawler adapter'
                 documentation: '%env(VCS_URL)%/docs'
@@ -63,5 +66,12 @@ services:
         tags: ['iot_crawler_adapter.loriot_data_parser']
 
     App\EventListener\MeasurementListener:
+        tags:
+            - { name: 'doctrine.event_subscriber' }
+
+    App\EventListener\BrokerMeasurementListener:
+        arguments:
+            $config:
+                ngsi_ld_broker_url: '%env(NGSI_LD_BROKER_URL)%'
         tags:
             - { name: 'doctrine.event_subscriber' }

@@ -6,6 +6,9 @@
     ]
   },
   adapter: {
+    post: {
+      url: "https://iot-crawler-adapter.example.com/smartcitizen"
+    },
     // Set this to a valid api token.
     api_token: null
   }
