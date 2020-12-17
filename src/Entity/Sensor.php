@@ -34,9 +34,13 @@ class Sensor
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"sensor", "device"})
      */
     private $name;
+
+    /**
+     * @ORM\Column(type="json")
+     */
+    private $metadata = [];
 
     public function getId(): ?string
     {
@@ -62,9 +66,12 @@ class Sensor
         return $this;
     }
 
+    /**
+     * @Groups({"sensor", "device"})
+     */
     public function getName(): ?string
     {
-        return $this->name;
+        return $this->metadata['name'] ?? $this->name;
     }
 
     public function setName(string $name): self
@@ -72,5 +79,33 @@ class Sensor
         $this->name = $name;
 
         return $this;
+    }
+
+    public function getMetadata(): ?array
+    {
+        return $this->metadata;
+    }
+
+    public function setMetadata(array $metadata): self
+    {
+        $this->metadata = $metadata;
+
+        return $this;
+    }
+
+    /**
+     * @Groups({"sensor", "device"})
+     */
+    public function getDescription(): ?string
+    {
+        return $this->metadata['description'] ?? null;
+    }
+
+    /**
+     * @Groups({"sensor", "device"})
+     */
+    public function getUnit(): ?string
+    {
+        return $this->metadata['unit'] ?? null;
     }
 }

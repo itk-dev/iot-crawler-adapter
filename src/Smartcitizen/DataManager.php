@@ -30,9 +30,10 @@ class DataManager extends AbstractDataManager
                 ->setUser($user)
                 ->setId($deviceId)
                 ->setType(Device::SMARTCITIZEN)
-                ->setName('smartcitizen '.$deviceId);
-            $this->entityManager->persist($device);
+                ->setName('SmartCitizen '.$deviceId);
         }
+        $device->setMetadata($payload);
+        $this->entityManager->persist($device);
 
         if ($device->getUser() !== $user) {
             throw new RuntimeException('Device not owned by current user');
@@ -47,9 +48,10 @@ class DataManager extends AbstractDataManager
                 $sensor = (new Sensor())
                     ->setId($sensorId)
                     ->setDevice($device)
-                    ->setName('Smartcitizen '.$sensorId);
-                $this->entityManager->persist($sensor);
+                    ->setName('SmartCitizen '.$sensorId);
             }
+            $sensor->setMetadata($data);
+            $this->entityManager->persist($sensor);
 
             $measurement = (new Measurement())
                 ->setSensor($sensor)

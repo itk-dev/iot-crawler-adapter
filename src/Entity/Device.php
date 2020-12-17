@@ -48,6 +48,11 @@ class Device implements TimestampableInterface
     private $name;
 
     /**
+     * @ORM\Column(type="json")
+     */
+    private $metadata = [];
+
+    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Sensor", mappedBy="device", orphanRemoval=true)
      * @Groups("device")
      */
@@ -100,6 +105,18 @@ class Device implements TimestampableInterface
         return $this;
     }
 
+    public function getMetadata(): ?array
+    {
+        return $this->metadata;
+    }
+
+    public function setMetadata(array $metadata): self
+    {
+        $this->metadata = $metadata;
+
+        return $this;
+    }
+
     /**
      * @return Collection|Sensor[]
      */
@@ -141,5 +158,13 @@ class Device implements TimestampableInterface
         $this->user = $user;
 
         return $this;
+    }
+
+    /**
+     * @Groups("device")
+     */
+    public function getLocation(): ?array
+    {
+        return $this->metadata['data']['location'] ?? null;
     }
 }
