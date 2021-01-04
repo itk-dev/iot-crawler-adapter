@@ -1,13 +1,5 @@
 <?php
 
-/*
- * This file is part of itk-dev/iot-crawler-adapter.
- *
- * (c) 2020 ITK Development
- *
- * This source file is subject to the MIT license.
- */
-
 return [
     Symfony\Bundle\FrameworkBundle\FrameworkBundle::class => ['all' => true],
     Symfony\Bundle\TwigBundle\TwigBundle::class => ['all' => true],
@@ -22,4 +14,5 @@ return [
     Symfony\Bundle\MakerBundle\MakerBundle::class => ['dev' => true],
     Knp\DoctrineBehaviors\Bundle\DoctrineBehaviorsBundle::class => ['all' => true],
     Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle::class => ['dev' => true, 'test' => true],
+    ItkDev\DatabaseBundle\ItkDevDatabaseBundle::class => ['all' => true],
 ];
