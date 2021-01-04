@@ -10,12 +10,12 @@
 
 namespace App\Serializer;
 
-use App\Entity\Device;
+use App\Entity\Sensor;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\ContextAwareNormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
-class DeviceNormalizer implements ContextAwareNormalizerInterface
+class SensorNormalizer implements ContextAwareNormalizerInterface
 {
     private $router;
     private $normalizer;
@@ -26,14 +26,23 @@ class DeviceNormalizer implements ContextAwareNormalizerInterface
         $this->normalizer = $normalizer;
     }
 
-    public function normalize($device, string $format = null, array $context = [])
+    public function normalize($sensor, string $format = null, array $context = [])
     {
-        $data = $this->normalizer->normalize($device, $format, $context);
+        $data = $this->normalizer->normalize($sensor, $format, $context);
 
         if (\in_array('links', (array) $context['groups'] ?? [], true)) {
+            $device = $sensor->getDevice();
             $data['links'] = [
-                'self' => $this->router->generate('device_show', [
+                'self' => $this->router->generate('sensor_show', [
+                    'sensor' => $sensor->getId(),
+                ], UrlGeneratorInterface::ABSOLUTE_URL),
+                'latest_measurement' => $this->router->generate('measurement_latest', [
                     'device' => $device->getId(),
+                    'sensor' => $sensor->getId(),
+                ], UrlGeneratorInterface::ABSOLUTE_URL),
+                'all_measurements' => $this->router->generate('measurement_all', [
+                    'device' => $device->getId(),
+                    'sensor' => $sensor->getId(),
                 ], UrlGeneratorInterface::ABSOLUTE_URL),
             ];
         }
@@ -43,6 +52,6 @@ class DeviceNormalizer implements ContextAwareNormalizerInterface
 
     public function supportsNormalization($data, string $format = null, array $context = [])
     {
-        return $data instanceof Device;
+        return $data instanceof Sensor;
     }
 }
