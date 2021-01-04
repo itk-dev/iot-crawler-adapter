@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of itk-dev/iot-crawler-adapter.
  *
- * (c) 2020 ITK Development
+ * (c) 2020–2021 ITK Development
  *
  * This source file is subject to the MIT license.
  */
