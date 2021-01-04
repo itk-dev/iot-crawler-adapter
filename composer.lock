@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "aa5a54029d68f2670701ca7f6f6d36e1",
+    "content-hash": "174eb21be5fccbe27f27a964f7f7b37e",
     "packages": [
         {
             "name": "brick/math",
@@ -1504,6 +1504,7 @@
                 "reflection",
                 "static"
             ],
+            "abandoned": "roave/better-reflection",
             "time": "2020-03-27T11:06:43+00:00"
         },
         {
@@ -1713,6 +1714,47 @@
                 }
             ],
             "time": "2020-04-15T18:51:10+00:00"
+        },
+        {
+            "name": "itk-dev/database-bundle",
+            "version": "1.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/itk-dev/database-bundle.git",
+                "reference": "05a050edae003907b3902b92de32b80d32354472"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/itk-dev/database-bundle/zipball/05a050edae003907b3902b92de32b80d32354472",
+                "reference": "05a050edae003907b3902b92de32b80d32354472",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/dbal": "*",
+                "symfony/framework-bundle": "*"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.10",
+                "squizlabs/php_codesniffer": "^3.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ItkDev\\DatabaseBundle\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mikkel Ricky",
+                    "email": "rimi@aarhus.dk"
+                }
+            ],
+            "description": "A Symfony bundle with useful database stuff",
+            "time": "2020-04-11T15:47:32+00:00"
         },
         {
             "name": "knplabs/doctrine-behaviors",
