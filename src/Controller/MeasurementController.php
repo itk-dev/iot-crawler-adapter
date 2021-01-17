@@ -11,6 +11,7 @@
 namespace App\Controller;
 
 use App\Entity\Device;
+use App\Entity\Measurement;
 use App\Entity\Sensor;
 use App\Loriot\DataManager as LoriotDataManager;
 use App\Montem\DataManager as MontemDataManager;
@@ -23,12 +24,26 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @Route("/measurements", name="measurement_")
  */
 class MeasurementController extends ApiController
 {
+    public function __construct(
+        SerializerInterface $serializer,
+        LoriotDataManager $loriotDataManager,
+        SmartcitizenDataManager $smartcitizenDataManager,
+        MontemDataManager $montemDataManager
+    )
+    {
+        parent::__construct($serializer);
+        $this->loriotDataManager = $loriotDataManager;
+        $this->smartcitizenDataManager = $smartcitizenDataManager;
+        $this->montemDataManager = $montemDataManager;
+    }
+
     /**
      * @Route("/{device}", name="device")
      */
@@ -48,10 +63,7 @@ class MeasurementController extends ApiController
         Request $request,
         ?Device $device,
         ?Sensor $sensor,
-        MeasurementRepository $repository,
-        LoriotDataManager $loriotDataManager,
-        SmartcitizenDataManager $smartcitizenDataManager,
-        MontemDataManager $montemDataManager
+        MeasurementRepository $repository
     ): Response {
         if (null === $device) {
             return $this->createExceptionResponse(new NotFoundHttpException(sprintf('Device %s not found', $request->attributes->get('_route_params')['device'] ?? null)));
@@ -67,31 +79,10 @@ class MeasurementController extends ApiController
         if (null === $measurement) {
             throw new NotFoundHttpException();
         }
-        $type = $measurement->getSensor()->getDevice()->getType();
-        switch ($type) {
-            case Device::LORIOT:
-                $attributes = $loriotDataManager->getAttributes($measurement);
-                break;
 
-            case Device::SMARTCITIZEN:
-                $attributes = $smartcitizenDataManager->getAttributes($measurement);
-                break;
+        $data = $this->buildMeasurementData($measurement);
 
-            case Device::MONTEM:
-                $attributes = $montemDataManager->getAttributes($measurement);
-                break;
-        }
-
-        if (empty($attributes)) {
-            throw new NotFoundHttpException();
-        }
-
-        $result = [
-            'attributes' => $attributes,
-            'source' => $measurement->getPayload(),
-        ];
-
-        return $this->createJsonResponse($result, ['groups' => 'measurement']);
+        return $this->createJsonResponse($data, ['groups' => 'measurement']);
     }
 
     /**
@@ -109,6 +100,35 @@ class MeasurementController extends ApiController
             'timestamp' => Criteria::DESC,
         ]);
 
-        return $this->createJsonResponse($result, ['groups' => ['sensor', 'measurement']]);
+        $data = array_map([$this, 'buildMeasurementData'], $result);
+
+        return $this->createJsonResponse($data, ['groups' => ['measurement']]);
+    }
+
+    private function buildMeasurementData(Measurement $measurement)
+    {
+        $type = $measurement->getSensor()->getDevice()->getType();
+        switch ($type) {
+        case Device::LORIOT:
+            $attributes = $this->loriotDataManager->getAttributes($measurement);
+            break;
+
+        case Device::SMARTCITIZEN:
+            $attributes = $this->smartcitizenDataManager->getAttributes($measurement);
+            break;
+
+        case Device::MONTEM:
+            $attributes = $this->montemDataManager->getAttributes($measurement);
+            break;
+        }
+
+        if (empty($attributes)) {
+            throw new NotFoundHttpException();
+        }
+
+        return [
+            'attributes' => $attributes,
+            'source' => $measurement->getPayload(),
+        ];
     }
 }
