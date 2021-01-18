@@ -108,4 +108,12 @@ class Sensor
     {
         return $this->metadata['unit'] ?? null;
     }
+
+    /**
+     * @Groups({"sensor", "device"})
+     */
+    public function getLocation(): ?array
+    {
+        return $this->getDevice()->getLocation();
+    }
 }
